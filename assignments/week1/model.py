@@ -3,7 +3,7 @@ import numpy as np
 
 class LinearRegression:
     """
-        A linear regression model that uses close form solution to fit the model.
+    A linear regression model that uses close form solution to fit the model.
     """
 
     w: np.ndarray
@@ -32,7 +32,7 @@ class LinearRegression:
         self.w = tmp[:-1]
         self.b = tmp[-1]
 
-    def predict(self, X : np.ndarray) -> np.ndarray:
+    def predict(self, X: np.ndarray) -> np.ndarray:
         """
         X : np.ndarray
         Use matrix multiplication to calculate the prediction
@@ -47,6 +47,7 @@ class GradientDescentLinearRegression(LinearRegression):
     """
     A linear regression model that uses gradient descent to fit the model.
     """
+
     w: np.ndarray
     b: float
 
@@ -54,11 +55,11 @@ class GradientDescentLinearRegression(LinearRegression):
         self, X: np.ndarray, y: np.ndarray, lr: float = 0.01, epochs: int = 1000
     ) -> None:
         """
-            X: np.ndarray, Features
-            y: np.ndarray, Label
-            lr: float, Learning rate
-            epochs: int, Number of training epochs
-            Use gradient descent to update the weights and bias term
+        X: np.ndarray, Features
+        y: np.ndarray, Label
+        lr: float, Learning rate
+        epochs: int, Number of training epochs
+        Use gradient descent to update the weights and bias term
         """
         n, p = X.shape
         # Initialize the weight and bias term with 0

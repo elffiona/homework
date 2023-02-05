@@ -2,13 +2,16 @@
     "assignment_name": "MLP",
     "contributors": [
         {
-            "name": "Jordan Matelsky",
-            "pennkey": "matelsky"
+            "name": "Yufei Wang",
+            "pennkey": "yufwang"
+        },
+        {
+            "name": "Ruchika Singh",
+            "pennkey": "sruchika"
         }
     ],
     "sources": [
         "https://example.com",
-        "Conversations with TA (include TA's name)",
-        "LLM (include information about the LLM and how it was used)"
+        "https://stackoverflow.com/questions/59156629/cant-init-the-weights-of-my-neural-network-pytorch"
     ]
 }

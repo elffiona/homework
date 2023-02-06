@@ -44,7 +44,8 @@ class MLP(torch.nn.Module):
         # Initialize weights
         for lay in self.layers:
             if type(lay) == torch.nn.Linear:
-                initializer(lay.weight)
+                # initializer(lay.weight)
+                initializer(lay.weight, gain=1.4141428569978354)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """

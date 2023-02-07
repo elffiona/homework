@@ -31,11 +31,13 @@ class MLP(torch.nn.Module):
         self.layers = torch.nn.ModuleList()
         # Add input layer
         self.layers.append(torch.nn.Linear(input_size, hidden_size))
+        self.layers.append(torch.nn.BatchNorm1d(hidden_size))
 
         # Add hidden layers
         for i in np.arange(hidden_count):
             self.layers.append(activation())
             self.layers.append(torch.nn.Linear(hidden_size, hidden_size))
+            self.layers.append(torch.nn.BatchNorm1d(hidden_size))
 
         # Add output layers
         self.layers.append(activation())

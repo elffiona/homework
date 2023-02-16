@@ -1,9 +1,13 @@
 {
     "assignment_name": "RegOpt",
     "contributors": [
+       {
+            "name": "Yufei Wang",
+            "pennkey": "yufwang"
+        },
         {
-            "name": "Change this to your name",
-            "pennkey": "MyPennKey"
+            "name": "Ruchika Singh",
+            "pennkey": "sruchika"
         }
     ],
     "sources": [

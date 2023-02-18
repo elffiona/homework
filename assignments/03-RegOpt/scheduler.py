@@ -1,30 +1,137 @@
-import math
 from typing import List
-from torch.optim.lr_scheduler import _LRScheduler, CosineAnnealingWarmRestarts
+import math
+from torch.optim.lr_scheduler import _LRScheduler
+import warnings
+
+EPOCH_DEPRECATION_WARNING = (
+    "The epoch parameter in `scheduler.step()` was not necessary and is being "
+    "deprecated where possible. Please use `scheduler.step()` to step the "
+    "scheduler. During the deprecation, if epoch is different from None, the "
+    "closed form is used instead of the new chainable form, where available. "
+    "Please open an issue if you are unable to replicate your use case: "
+    "https://github.com/pytorch/pytorch/issues/new/choose."
+)
 
 
 class CustomLRScheduler(_LRScheduler):
     """
-    Implemented Scheduler
+    A custom learning rate scheduler that multiplies the learning rate by a factor of 0.5
+    whenever the validation loss does not improve for `patience` consecutive epochs.
+
+    Args:
+        optimizer (torch.optim.Optimizer): Wrapped optimizer.
+        last_epoch (int, optional): The index of last epoch. Default: -1.
+        patience (int): Number of epochs with no improvement after which learning rate will be reduced.
     """
 
-    def __init__(self, optimizer, last_epoch=-1, decay_factor=0.5, decay_epochs=20):
-        """
-        Create a new scheduler that implements step decay.
-        decay_factor: factor by which the learning rate will be reduced after each decay_epochs
-        decay_epochs: the number of epochs after which the learning rate will be decayed.
-        """
-        self.decay_factor = decay_factor
-        self.decay_epochs = decay_epochs
+    def __init__(self, optimizer, T_start, T_mult=1, eta_min=0, last_epoch=-1):
+        self.T_start = T_start
+        self.T_mult = T_mult
+        self.T_max = T_start
+        self.eta_min = eta_min
+        self.T_cur = last_epoch
         super(CustomLRScheduler, self).__init__(optimizer, last_epoch)
 
     def get_lr(self) -> List[float]:
         """
-        Compute the new learning rate after each epoch.
+        cosine annealing LR with warm restart
         """
-        new_lr = []
-        for lr in self.base_lrs:
-            new_lr.append(
-                lr * self.decay_factor ** (self.last_epoch // self.decay_epochs)
-            )
-        return new_lr
+        if self.T_cur == 0:
+            return self.base_lrs
+        elif self.T_cur == self.T_max:
+            return [self.eta_min for _ in self.base_lrs]
+        else:
+            return [
+                self.eta_min
+                + (base_lr - self.eta_min)
+                * (1 + math.cos(math.pi * self.T_cur / self.T_max))
+                / 2
+                for base_lr in self.base_lrs
+            ]
+
+    def step(self, epoch=None):
+        """
+        Modified based on the step function of pytorch class _LRScheduler
+        """
+        # if self._step_count == 1:
+        #     if not hasattr(self.optimizer.step, "_with_counter"):
+        #         warnings.warn("Seems like `optimizer.step()` has been overridden after learning rate scheduler "
+        #                           "initialization. Please, make sure to call `optimizer.step()` before "
+        #                           "`lr_scheduler.step()`. See more details at "
+        #                           "https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate", UserWarning)
+        #
+        #     # Just check if there were two first lr_scheduler.step() calls before optimizer.step()
+        #     elif self.optimizer._step_count < 1:
+        #         warnings.warn("Detected call of `lr_scheduler.step()` before `optimizer.step()`. "
+        #                           "In PyTorch 1.1.0 and later, you should call them in the opposite order: "
+        #                           "`optimizer.step()` before `lr_scheduler.step()`.  Failure to do this "
+        #                           "will result in PyTorch skipping the first value of the learning rate schedule. "
+        #                           "See more details at "
+        #                           "https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate", UserWarning)
+        # self._step_count += 1
+
+        # Check current number of epoch
+        if epoch is None and self.last_epoch < 0:
+            # first epoch, initialize
+            epoch = 0
+
+        if epoch is None:
+            # Not first epoch, just the start of current epoch
+            epoch = self.last_epoch + 1
+            # Increment T_cur
+            self.T_cur = self.T_cur + 1
+            # Check if current epoch number is max
+            if self.T_cur >= self.T_max:
+                self.T_cur = self.T_cur - self.T_max
+                self.T_max = self.T_max * self.T_mult
+        else:
+            # Running current epoch
+            if epoch >= self.T_start:
+                # Not the fist round of epochs
+                if self.T_mult == 1:
+                    self.T_cur = epoch % self.T_start
+                else:
+                    n = int(
+                        math.log(
+                            (epoch / self.T_start * (self.T_mult - 1) + 1), self.T_mult
+                        )
+                    )
+                    self.T_cur = epoch - self.T_start * (self.T_mult**n - 1) / (
+                        self.T_mult - 1
+                    )
+                    self.T_max = self.T_start * self.T_mult ** (n)
+            else:
+                self.T_max = self.T_start
+                self.T_cur = epoch
+            self.last_epoch = math.floor(epoch)
+
+        class _enable_get_lr_call:
+            def __init__(self, o):
+                self.o = o
+
+            def __enter__(self):
+                self.o._get_lr_called_within_step = True
+                return self
+
+            def __exit__(self, type, value, traceback):
+                self.o._get_lr_called_within_step = False
+                return self
+
+        with _enable_get_lr_call(self):
+            if epoch is None:
+                self.last_epoch += 1
+                values = self.get_lr()
+            else:
+                warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)
+                self.last_epoch = epoch
+                if hasattr(self, "_get_closed_form_lr"):
+                    values = self._get_closed_form_lr()
+                else:
+                    values = self.get_lr()
+
+        for i, data in enumerate(zip(self.optimizer.param_groups, values)):
+            param_group, lr = data
+            param_group["lr"] = lr
+            self.print_lr(self.verbose, i, lr, epoch)
+
+        self._last_lr = [group["lr"] for group in self.optimizer.param_groups]

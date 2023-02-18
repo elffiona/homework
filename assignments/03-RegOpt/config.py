@@ -3,31 +3,39 @@ import torch
 import torch.optim
 import torch.nn as nn
 from torchvision.transforms import Compose, Normalize, ToTensor
-from scheduler import CustomLRScheduler
 
 
 class CONFIG:
-    batch_size = 80
-    num_epochs = 50
-    initial_learning_rate = 0.5
-    initial_weight_decay = 0.01
+    """
+    configs class
+    """
 
-    lrs_kwargs = {
-        "decay_factor": 0.5,
-        "decay_epochs": 10,
-    }
+    batch_size = 128
+    num_epochs = 30
+    initial_learning_rate = 0.1
+    initial_weight_decay = 0.0005
+    momentum = 0
+
+    lrs_kwargs = {"T_start": 10, "T_mult": 2, "eta_min": 0}
 
     optimizer_factory: Callable[
         [nn.Module], torch.optim.Optimizer
     ] = lambda model: torch.optim.SGD(
         model.parameters(),
         lr=CONFIG.initial_learning_rate,
-        momentum=0.9,
         weight_decay=CONFIG.initial_weight_decay,
+        momentum=CONFIG.momentum,
     )
+
     transforms = Compose(
         [
             ToTensor(),
-            Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+        ]
+    )
+
+    train_transforms = Compose(
+        [
+            ToTensor(),
+            Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
         ]
     )

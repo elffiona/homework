@@ -10,13 +10,13 @@ class CONFIG:
     configs class
     """
 
-    batch_size = 128
-    num_epochs = 30
-    initial_learning_rate = 0.1
+    batch_size = 64
+    num_epochs = 20
+    initial_learning_rate = 0.02
     initial_weight_decay = 0.0005
     momentum = 0
 
-    lrs_kwargs = {"T_start": 10, "T_mult": 2, "eta_min": 0}
+    lrs_kwargs = {"T_start": 4, "T_mult": 1.5, "eta_min": 0}
 
     optimizer_factory: Callable[
         [nn.Module], torch.optim.Optimizer

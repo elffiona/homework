@@ -32,7 +32,16 @@ class CustomLRScheduler(_LRScheduler):
         self.T_cur = last_epoch
         super(CustomLRScheduler, self).__init__(optimizer, last_epoch)
 
+    #
+    # def __init__(self, optimizer, gamma=0, last_epoch=-1):
+    #     self.gamma = gamma
+    #     super(CustomLRScheduler, self).__init__(optimizer, last_epoch)
+    #
     def get_lr(self) -> List[float]:
+        """
+        exponential
+        """
+
         """
         cosine annealing LR with warm restart
         """
@@ -53,7 +62,6 @@ class CustomLRScheduler(_LRScheduler):
         """
         Modified based on the step function of pytorch class _LRScheduler
         """
-
         # Check current number of epoch
         if epoch is None and self.last_epoch < 0:
             # first epoch, initialize

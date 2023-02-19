@@ -16,11 +16,16 @@ class CONFIG:
     initial_weight_decay = 0.0005
     momentum = 0.1
 
-    # lrs_kwargs = {"T_start": 4, "T_mult": 2, "eta_min": 0}
     lrs_kwargs = {
-        "gamma": 0.95,
+        "T_start": 4,
+        "T_mult": 2,
+        "eta_min": 0,
         "num_batch": 391,
     }
+    # lrs_kwargs = {
+    #     "gamma": 0.95,
+    #     "num_batch": 391,
+    # }
 
     optimizer_factory: Callable[
         [nn.Module], torch.optim.Optimizer

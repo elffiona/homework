@@ -11,13 +11,16 @@ class CONFIG:
     """
 
     batch_size = 128
-    num_epochs = 25
+    num_epochs = 15
     initial_learning_rate = 0.1
     initial_weight_decay = 0.0005
-    momentum = 0
+    momentum = 0.1
 
     # lrs_kwargs = {"T_start": 4, "T_mult": 2, "eta_min": 0}
-    lrs_kwargs = {"T_start": 4, "T_mult": 2, "eta_min": 0}
+    lrs_kwargs = {
+        "gamma": 0.95,
+        "num_batch": 391,
+    }
 
     optimizer_factory: Callable[
         [nn.Module], torch.optim.Optimizer
@@ -27,14 +30,15 @@ class CONFIG:
         weight_decay=CONFIG.initial_weight_decay,
         momentum=CONFIG.momentum,
     )
+    # optimizer_factory: Callable[
+    #     [nn.Module], torch.optim.Optimizer
+    # ] = lambda model: torch.optim.Adam(
+    #     model.parameters(),
+    #     lr=CONFIG.initial_learning_rate,
+    #     weight_decay=CONFIG.initial_weight_decay,
+    # )
 
     transforms = Compose(
-        [
-            ToTensor(),
-        ]
-    )
-
-    train_transforms = Compose(
         [
             ToTensor(),
             Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),

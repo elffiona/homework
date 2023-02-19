@@ -11,7 +11,7 @@ class CONFIG:
     """
 
     batch_size = 128
-    num_epochs = 15
+    num_epochs = 20
     initial_learning_rate = 0.1
     initial_weight_decay = 0.0005
     momentum = 0.1

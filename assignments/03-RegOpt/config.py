@@ -10,17 +10,17 @@ class CONFIG:
     configs class
     """
 
-    batch_size = 128
+    batch_size = 64
     num_epochs = 20
     initial_learning_rate = 0.1
     initial_weight_decay = 0.0005
     momentum = 0.1
 
     lrs_kwargs = {
-        "T_start": 4,
-        "T_mult": 2,
+        "T_start": 3,
+        "T_mult": 1.5,
         "eta_min": 0,
-        "num_batch": 391,
+        "num_batch": 782,
     }
     # lrs_kwargs = {
     #     "gamma": 0.95,

@@ -33,11 +33,11 @@ class Model(torch.nn.Module):
         # self.relu4 = torch.nn.ReLU(inplace=True)
         #
         # self.fc2 = torch.nn.Linear(256, num_classes)
-        self.conv1 = torch.nn.Conv2d(num_channels, 16, kernel_size=3)
+        self.conv1 = torch.nn.Conv2d(num_channels, 6, kernel_size=3)
         self.relu1 = torch.nn.ReLU()
         self.pool1 = torch.nn.MaxPool2d(kernel_size=5, stride=5)
-        # 6 * 6 * 16
-        self.fc1 = torch.nn.Linear(576, 1000)
+        # 6 * 6 * 6
+        self.fc1 = torch.nn.Linear(216, 1000)
         self.fc2 = torch.nn.Linear(1000, num_classes)
         # Try initializing the weight
         torch.nn.init.xavier_uniform_(self.conv1.weight)

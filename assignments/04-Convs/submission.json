@@ -11,6 +11,6 @@
         }
     ],
     "sources": [
-        "Don't forget to list your sources/attribution here!"
+        "https://pytorch.org/docs/stable/generated/torch.nn.GELU.html"
     ]
 }

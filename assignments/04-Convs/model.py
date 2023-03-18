@@ -34,17 +34,17 @@ class Model(torch.nn.Module):
         #
         # self.fc2 = torch.nn.Linear(256, num_classes)
         self.conv1 = torch.nn.Conv2d(
-            num_channels, 16, kernel_size=4, padding=0, stride=2
+            num_channels, 20, kernel_size=4, padding=0, stride=2
         )
-        self.bn1 = torch.nn.BatchNorm2d(16)
+        self.bn1 = torch.nn.BatchNorm2d(20)
         # 30 * 30 * 20 （20， 3）
         # 32 * 32 * 20 (20, 3, 1)
         # self.relu1 = torch.nn.ReLU()
         self.relu1 = torch.nn.GELU()
         self.pool1 = torch.nn.MaxPool2d(kernel_size=2, stride=2)
-        # 7 * 7 * 16
-        self.fc1 = torch.nn.Linear(784, 128)
-        self.fc2 = torch.nn.Linear(128, num_classes)
+        # 7 * 7 * 20
+        self.fc1 = torch.nn.Linear(980, 64)
+        self.fc2 = torch.nn.Linear(64, num_classes)
         # Try initializing the weight
         # torch.nn.init.xavier_uniform_(self.conv1.weight)
         # torch.nn.init.xavier_uniform_(self.fc1.weight)

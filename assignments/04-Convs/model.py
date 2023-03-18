@@ -34,19 +34,21 @@ class Model(torch.nn.Module):
         #
         # self.fc2 = torch.nn.Linear(256, num_classes)
         self.conv1 = torch.nn.Conv2d(
-            num_channels, 64, kernel_size=5, padding=2, stride=2
+            num_channels, 16, kernel_size=4, padding=0, stride=2
         )
+        self.bn1 = torch.nn.BatchNorm2d(16)
         # 30 * 30 * 20 （20， 3）
         # 32 * 32 * 20 (20, 3, 1)
-        self.relu1 = torch.nn.ReLU()
-        self.pool1 = torch.nn.MaxPool2d(kernel_size=4, stride=4)
-        # 4 * 4 * 64
-        self.fc1 = torch.nn.Linear(1024, 128)
-        self.fc2 = torch.nn.Linear(128, num_classes)
+        # self.relu1 = torch.nn.ReLU()
+        self.relu1 = torch.nn.GELU()
+        self.pool1 = torch.nn.MaxPool2d(kernel_size=2, stride=2)
+        # 7 * 7 * 16
+        self.fc1 = torch.nn.Linear(784, 64)
+        self.fc2 = torch.nn.Linear(64, num_classes)
         # Try initializing the weight
-        torch.nn.init.xavier_uniform_(self.conv1.weight)
-        torch.nn.init.xavier_uniform_(self.fc1.weight)
-        torch.nn.init.xavier_uniform_(self.fc2.weight)
+        # torch.nn.init.xavier_uniform_(self.conv1.weight)
+        # torch.nn.init.xavier_uniform_(self.fc1.weight)
+        # torch.nn.init.xavier_uniform_(self.fc2.weight)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -59,7 +61,7 @@ class Model(torch.nn.Module):
             The output of the network.
         """
         x = self.conv1(x)
-        # x = self.bn1(x)
+        x = self.bn1(x)
         x = self.relu1(x)
         x = self.pool1(x)
         # print(x.shape)

@@ -18,7 +18,7 @@ class CONFIG:
 
     optimizer_factory: Callable[
         [torch.nn.Module], torch.optim.Optimizer
-    ] = lambda model: torch.optim.Adam(model.parameters(), lr=0.001)
+    ] = lambda model: torch.optim.Adam(model.parameters(), lr=0.003)
 
     transforms_train = Compose(
         [

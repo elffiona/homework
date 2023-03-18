@@ -43,8 +43,8 @@ class Model(torch.nn.Module):
         self.relu1 = torch.nn.GELU()
         self.pool1 = torch.nn.MaxPool2d(kernel_size=2, stride=2)
         # 7 * 7 * 16
-        self.fc1 = torch.nn.Linear(784, 64)
-        self.fc2 = torch.nn.Linear(64, num_classes)
+        self.fc1 = torch.nn.Linear(784, 128)
+        self.fc2 = torch.nn.Linear(128, num_classes)
         # Try initializing the weight
         # torch.nn.init.xavier_uniform_(self.conv1.weight)
         # torch.nn.init.xavier_uniform_(self.fc1.weight)
